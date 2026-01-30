@@ -1,0 +1,54 @@
+{
+  "name": "arshpharala/advanced-custom-fields",
+  "description": "A powerful, beautiful, and easy-to-use custom fields system for Laravel with Admin UI, drag-and-drop sorting, and migrate:fresh-safe export/import.",
+  "type": "library",
+  "keywords": [
+    "laravel",
+    "acf",
+    "custom-fields",
+    "admin-panel",
+    "polymorphic"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "arshpharala",
+      "email": "info@arshpharala.com"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "illuminate/support": "^10.0|^11.0|^12.0",
+    "illuminate/database": "^10.0|^11.0|^12.0",
+    "illuminate/http": "^10.0|^11.0|^12.0",
+    "illuminate/view": "^10.0|^11.0|^12.0",
+    "illuminate/console": "^10.0|^11.0|^12.0",
+    "illuminate/routing": "^10.0|^11.0|^12.0",
+    "illuminate/validation": "^10.0|^11.0|^12.0",
+    "illuminate/auth": "^10.0|^11.0|^12.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^8.0|^9.0|^10.0",
+    "phpunit/phpunit": "^10.0|^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Arshpharala\\AdvancedCustomFields\\": "src/"
+    },
+    "files": [
+      "src/Support/helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Arshpharala\\AdvancedCustomFields\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Arshpharala\\AdvancedCustomFields\\AdvancedCustomFieldsServiceProvider"
+      ]
+    }
+  }
+}
