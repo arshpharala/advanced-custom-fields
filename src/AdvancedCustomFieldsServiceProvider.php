@@ -51,6 +51,11 @@ class AdvancedCustomFieldsServiceProvider extends ServiceProvider
             // Publish Migrations
             $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
+            // Publish Assets
+            $this->publishes([
+                __DIR__ . '/../resources/assets' => public_path('vendor/acf'),
+            ], 'acf-assets');
+
             // Register Commands
             $this->commands([
                 InstallCommand::class,
