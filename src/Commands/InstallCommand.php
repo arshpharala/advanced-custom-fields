@@ -15,7 +15,7 @@ class InstallCommand extends Command
 
         $this->call('vendor:publish', [
             '--provider' => 'Arshpharala\AdvancedCustomFields\AdvancedCustomFieldsServiceProvider',
-            '--tag' => ['acf-config', 'acf-assets']
+            '--tag' => ['acf-config', 'acf-assets', 'acf-views']
         ]);
 
         $this->info('Running migrations...');

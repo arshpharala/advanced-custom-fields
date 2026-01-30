@@ -56,6 +56,11 @@ class AdvancedCustomFieldsServiceProvider extends ServiceProvider
                 __DIR__ . '/../resources/assets' => public_path('vendor/acf'),
             ], 'acf-assets');
 
+            // Publish Views
+            $this->publishes([
+                __DIR__ . '/../resources/views' => resource_path('views/vendor/acf'),
+            ], 'acf-views');
+
             // Register Commands
             $this->commands([
                 InstallCommand::class,

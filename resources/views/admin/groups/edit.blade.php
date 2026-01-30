@@ -7,7 +7,8 @@
 @endsection
 
 @section('content')
-  <form action="{{ $is_edit ? route('acf.admin.groups.update', $group) : route('acf.admin.groups.store') }}" method="POST">
+  <form x-data="fieldManager()"
+    action="{{ $is_edit ? route('acf.admin.groups.update', $group) : route('acf.admin.groups.store') }}" method="POST">
     @csrf
     @if ($is_edit)
       @method('PUT')
@@ -45,12 +46,17 @@
           </div>
         </div>
 
-        <div class="acf-card bg-white p-4" x-data="fieldManager()">
+        <div class="acf-card bg-white p-4">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold m-0">Fields</h5>
-            <button type="button" class="btn btn-sm btn-outline-primary" @click="addField()">
-              <i class="bi bi-plus-lg me-1"></i> Add Field
-            </button>
+            @if ($is_edit)
+              <button type="button" class="btn btn-sm btn-outline-primary" @click="addField()">
+                <i class="bi bi-plus-lg me-1"></i> Add Field
+              </button>
+            @else
+              <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Save group first to add
+                fields</span>
+            @endif
           </div>
 
           <div id="fields-container">
@@ -126,112 +132,114 @@
         </div>
       </div>
     </div>
-  </form>
-  <div x-show="showFieldModal" class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" x-cloak>
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-light">
-          <h5 class="modal-title fw-bold" x-text="editingField ? 'Edit Field' : 'Add New Field'"></h5>
-          <button type="button" class="btn-close" @click="closeModal()"></button>
-        </div>
-        <div class="modal-body p-4">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label small fw-bold">Field Label</label>
-              <input type="text" x-model="fieldForm.name" class="form-control" placeholder="e.g. Subtitle">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small fw-bold">Field Key</label>
-              <input type="text" x-model="fieldForm.key" class="form-control" placeholder="e.g. subtitle">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small fw-bold">Field Type</label>
-              <select x-model="fieldForm.type" class="form-select">
-                <option value="text">Text</option>
-                <option value="textarea">Text Area</option>
-                <option value="number">Number</option>
-                <option value="select">Select</option>
-                <option value="toggle">Toggle</option>
-                <option value="date">Date</option>
-                <option value="email">Email</option>
-                <option value="url">URL</option>
-                <option value="color">Color</option>
-                <option value="repeater">Repeater</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label small fw-bold">Required?</label>
-              <select x-model="fieldForm.is_required" class="form-select">
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-              </select>
-            </div>
-            <div class="col-12">
-              <label class="form-label small fw-bold">Instructions</label>
-              <textarea x-model="fieldForm.instructions" class="form-control" rows="2"></textarea>
-            </div>
+    </div>
 
-            <!-- Sub Fields section only for Repeater -->
-            <div class="col-12" x-show="fieldForm.type === 'repeater'">
-              <div class="card border-0 bg-light p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h6 class="fw-bold m-0 small">Sub Fields</h6>
-                  <button type="button" class="btn btn-sm btn-primary" @click="addSubField()">
-                    <i class="bi bi-plus-lg"></i> Add Sub Field
-                  </button>
-                </div>
+    <div x-show="showFieldModal" class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" x-cloak>
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold" x-text="editingField ? 'Edit Field' : 'Add New Field'"></h5>
+            <button type="button" class="btn-close" @click="closeModal()"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Field Label</label>
+                <input type="text" x-model="fieldForm.name" class="form-control" placeholder="e.g. Subtitle">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Field Key</label>
+                <input type="text" x-model="fieldForm.key" class="form-control" placeholder="e.g. subtitle">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Field Type</label>
+                <select x-model="fieldForm.type" class="form-select">
+                  <option value="text">Text</option>
+                  <option value="textarea">Text Area</option>
+                  <option value="number">Number</option>
+                  <option value="select">Select</option>
+                  <option value="toggle">Toggle</option>
+                  <option value="date">Date</option>
+                  <option value="email">Email</option>
+                  <option value="url">URL</option>
+                  <option value="color">Color</option>
+                  <option value="repeater">Repeater</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">Required?</label>
+                <select x-model="fieldForm.is_required" class="form-select">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label small fw-bold">Instructions</label>
+                <textarea x-model="fieldForm.instructions" class="form-control" rows="2"></textarea>
+              </div>
 
-                <div class="sub-fields-list">
-                  <template x-for="(sub, sIndex) in fieldForm.sub_fields" :key="sIndex">
-                    <div class="p-3 bg-white rounded border mb-2 pos-relative shadow-sm">
-                      <button type="button" class="btn-close btn-sm pos-absolute" style="top:5px; right:5px"
-                        @click="removeSubField(sIndex)"></button>
-                      <div class="row g-2">
-                        <div class="col-md-4">
-                          <label class="form-label mb-1 xx-small fw-bold">Label</label>
-                          <input type="text" x-model="sub.name" class="form-control form-control-sm"
-                            placeholder="Label">
-                        </div>
-                        <div class="col-md-4">
-                          <label class="form-label mb-1 xx-small fw-bold">Key</label>
-                          <input type="text" x-model="sub.key" class="form-control form-control-sm"
-                            placeholder="key">
-                        </div>
-                        <div class="col-md-4">
-                          <label class="form-label mb-1 xx-small fw-bold">Type</label>
-                          <select x-model="sub.type" class="form-select form-select-sm">
-                            <option value="text">Text</option>
-                            <option value="textarea">Text Area</option>
-                            <option value="number">Number</option>
-                            <option value="select">Select</option>
-                            <option value="toggle">Toggle</option>
-                            <option value="date">Date</option>
-                            <option value="email">Email</option>
-                            <option value="url">URL</option>
-                            <option value="color">Color</option>
-                          </select>
+              <!-- Sub Fields section only for Repeater -->
+              <div class="col-12" x-show="fieldForm.type === 'repeater'">
+                <div class="card border-0 bg-light p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold m-0 small">Sub Fields</h6>
+                    <button type="button" class="btn btn-sm btn-primary" @click="addSubField()">
+                      <i class="bi bi-plus-lg"></i> Add Sub Field
+                    </button>
+                  </div>
+
+                  <div class="sub-fields-list">
+                    <template x-for="(sub, sIndex) in fieldForm.sub_fields" :key="sIndex">
+                      <div class="p-3 bg-white rounded border mb-2 pos-relative shadow-sm">
+                        <button type="button" class="btn-close btn-sm pos-absolute" style="top:5px; right:5px"
+                          @click="removeSubField(sIndex)"></button>
+                        <div class="row g-2">
+                          <div class="col-md-4">
+                            <label class="form-label mb-1 xx-small fw-bold">Label</label>
+                            <input type="text" x-model="sub.name" class="form-control form-control-sm"
+                              placeholder="Label">
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label mb-1 xx-small fw-bold">Key</label>
+                            <input type="text" x-model="sub.key" class="form-control form-control-sm"
+                              placeholder="key">
+                          </div>
+                          <div class="col-md-4">
+                            <label class="form-label mb-1 xx-small fw-bold">Type</label>
+                            <select x-model="sub.type" class="form-select form-select-sm">
+                              <option value="text">Text</option>
+                              <option value="textarea">Text Area</option>
+                              <option value="number">Number</option>
+                              <option value="select">Select</option>
+                              <option value="toggle">Toggle</option>
+                              <option value="date">Date</option>
+                              <option value="email">Email</option>
+                              <option value="url">URL</option>
+                              <option value="color">Color</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
+                    </template>
+                    <div class="text-center py-2 text-muted x-small" x-show="fieldForm.sub_fields.length === 0">
+                      No sub fields added.
                     </div>
-                  </template>
-                  <div class="text-center py-2 text-muted x-small" x-show="fieldForm.sub_fields.length === 0">
-                    No sub fields added.
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer bg-light border-0">
-          <button type="button" class="btn btn-light" @click="closeModal()">Cancel</button>
-          <button type="button" class="btn btn-primary px-4" @click="saveField()" :disabled="saving">
-            <span x-show="saving" class="spinner-border spinner-border-sm me-1"></span>
-            Save Field
-          </button>
+          <div class="modal-footer bg-light border-0">
+            <button type="button" class="btn btn-light" @click="closeModal()">Cancel</button>
+            <button type="button" class="btn btn-primary px-4" @click="saveField()" :disabled="saving">
+              <span x-show="saving" class="spinner-border spinner-border-sm me-1"></span>
+              Save Field
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </form>
 @endsection
 
 @push('scripts')
