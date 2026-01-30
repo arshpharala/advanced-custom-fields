@@ -241,7 +241,7 @@
         locations: @json($group->locations),
         addRule() {
           this.locations.push({
-            model_type: 'App\\Models\\Post'
+            model_type: @json($models[0] ?? '')
           });
         },
         removeRule(index) {
