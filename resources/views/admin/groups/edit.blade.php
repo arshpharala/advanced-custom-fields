@@ -324,8 +324,8 @@
         async saveField() {
           this.saving = true;
           const url = this.editingField ?
-            `{{ url('admin/advanced-custom-fields/fields') }}/${this.editingField.id}` :
-            `{{ url('admin/advanced-custom-fields/fields') }}`;
+            `{{ route('acf.admin.fields.store') }}/${this.editingField.id}` :
+            `{{ route('acf.admin.fields.store') }}`;
 
           const method = this.editingField ? 'PUT' : 'POST';
 
@@ -353,7 +353,7 @@
         },
         deleteField(id) {
           if (confirm('Delete this field? Stored values will remain but will be orphaned.')) {
-            fetch(`{{ url('admin/advanced-custom-fields/fields') }}/${id}`, {
+            fetch(`{{ route('acf.admin.fields.store') }}/${id}`, {
               method: 'DELETE',
               headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
