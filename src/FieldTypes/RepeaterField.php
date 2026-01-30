@@ -22,6 +22,10 @@ class RepeaterField extends BaseFieldType
 
     public function formatValue($value, $field)
     {
+        if (is_string($value)) {
+            $value = json_decode($value, true) ?: [];
+        }
+
         // Recursively format sub-fields
         if (!is_array($value)) {
             return [];
