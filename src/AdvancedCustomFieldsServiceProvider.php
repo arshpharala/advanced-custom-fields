@@ -31,6 +31,7 @@ class AdvancedCustomFieldsServiceProvider extends ServiceProvider
             $registry->register(new \Arshpharala\AdvancedCustomFields\FieldTypes\EmailField());
             $registry->register(new \Arshpharala\AdvancedCustomFields\FieldTypes\UrlField());
             $registry->register(new \Arshpharala\AdvancedCustomFields\FieldTypes\ColorField());
+            $registry->register(new \Arshpharala\AdvancedCustomFields\FieldTypes\RepeaterField());
             
             return $registry;
         });

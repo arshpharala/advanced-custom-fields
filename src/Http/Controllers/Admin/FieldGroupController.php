@@ -3,8 +3,8 @@
 namespace Arshpharala\AdvancedCustomFields\Http\Controllers\Admin;
 
 use Illuminate\Routing\Controller;
-use Arshpharala\AdvancedCustomFields\Models\FieldGroup;
 use Illuminate\Http\Request;
+use Arshpharala\AdvancedCustomFields\Models\FieldGroup;
 use Illuminate\Support\Facades\DB;
 
 class FieldGroupController extends Controller
@@ -66,6 +66,12 @@ class FieldGroupController extends Controller
         $group->update($validated);
 
         // Update fields and locations here if needed in a batch update
+        if ($request->has('locations')) {
+            $group->locations()->delete();
+            foreach ($request->locations as $loc) {
+                $group->locations()->create($loc);
+            }
+        }
 
         return redirect()->back()->with('success', 'Field group updated successfully.');
     }

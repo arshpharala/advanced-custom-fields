@@ -14,8 +14,10 @@ Route::prefix(config('advanced-custom-fields.route_prefix', 'admin/advanced-cust
         Route::get('/', [FieldGroupController::class, 'index'])->name('index');
         Route::resource('groups', FieldGroupController::class);
         
-        Route::post('fields/sort', [FieldController::class, 'sort'])->name('fields.sort');
-        Route::delete('fields/{field}', [FieldController::class, 'destroy'])->name('fields.destroy');
+        Route::post('/fields', [FieldController::class, 'store'])->name('fields.store');
+        Route::put('/fields/{field}', [FieldController::class, 'update'])->name('fields.update');
+        Route::post('/fields/sort', [FieldController::class, 'sort'])->name('fields.sort');
+        Route::delete('/fields/{field}', [FieldController::class, 'destroy'])->name('fields.destroy');
         
         Route::get('import-export', [ImportExportController::class, 'index'])->name('import-export.index');
         Route::post('export', [ImportExportController::class, 'export'])->name('export');

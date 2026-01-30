@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Cache;
 
 trait HasAdvancedCustomFields
 {
+    /** @var array State for currently looping repeaters */
+    protected $acfRepeaterStates = [];
+
     /**
      * Get all ACF values for this model.
      */
@@ -41,7 +44,68 @@ trait HasAdvancedCustomFields
                 ->first();
         }
 
-        return $valueModel ? $valueModel->value : ($field->default_value ?? $default);
+        $value = $valueModel ? $valueModel->value : ($field->default_value ?? $default);
+
+        // If it's a repeater, ensure it's formatted (though formatValue in FieldType handles this)
+        return $value;
+    }
+
+    /**
+     * Check if a repeater has rows.
+     */
+    public function haveRows(string $key): bool
+    {
+        if (!isset($this->acfRepeaterStates[$key])) {
+            $value = $this->acf($key);
+            if (!is_array($value) || empty($value)) {
+                return false;
+            }
+            $this->acfRepeaterStates[$key] = [
+                'rows' => $value,
+                'index' => -1,
+                'count' => count($value),
+            ];
+        }
+
+        $state = &$this->acfRepeaterStates[$key];
+        return ($state['index'] + 1) < $state['count'];
+    }
+
+    /**
+     * Advance the repeater row.
+     */
+    public function theRow(string $key): array
+    {
+        if (!isset($this->acfRepeaterStates[$key])) {
+            $this->haveRows($key);
+        }
+
+        $state = &$this->acfRepeaterStates[$key];
+        $state['index']++;
+
+        return $state['rows'][$state['index']];
+    }
+
+    /**
+     * Get a sub field value from the current repeater row.
+     */
+    public function getSubField(string $key, string $repeaterKey = null)
+    {
+        // If repeaterKey is not provided, try to guess from the last active state
+        if (!$repeaterKey) {
+            $repeaterKey = array_key_last($this->acfRepeaterStates);
+        }
+
+        if (!$repeaterKey || !isset($this->acfRepeaterStates[$repeaterKey])) {
+            return null;
+        }
+
+        $state = $this->acfRepeaterStates[$repeaterKey];
+        if ($state['index'] < 0 || $state['index'] >= $state['count']) {
+            return null;
+        }
+
+        return $state['rows'][$state['index']][$key] ?? null;
     }
 
     /**

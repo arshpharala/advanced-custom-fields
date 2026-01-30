@@ -10,12 +10,13 @@ abstract class BaseFieldType implements FieldTypeInterface
 {
     abstract public function getName(): string;
 
-    public function renderInput(Field $field, $value = null): string
+    public function renderInput(Field $field, $value = null, string $inputName = null): string
     {
         return View::make("acf::types.{$this->getName()}", [
             'field' => $field,
             'value' => $value ?? $field->default_value,
             'presentation' => $field->presentation ?? [],
+            'inputName' => $inputName ?? "acf[{$field->key}]",
         ])->render();
     }
 

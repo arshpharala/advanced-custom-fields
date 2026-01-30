@@ -26,21 +26,33 @@ class Field extends Model
         'presentation',
         'order',
         'is_active',
+        'parent_id',
     ];
 
     protected $casts = [
         'is_required' => 'boolean',
         'is_active' => 'boolean',
         'default_value' => 'json',
-        'options' => 'json',
-        'conditional_logic' => 'json',
-        'presentation' => 'json',
+        'options' => 'array',
+        'conditional_logic' => 'array',
+        'presentation' => 'array',
         'order' => 'integer',
+        'parent_id' => 'integer',
     ];
 
-    public function group(): BelongsTo
+    public function group()
     {
         return $this->belongsTo(FieldGroup::class, 'group_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Field::class, 'parent_id');
+    }
+
+    public function subFields()
+    {
+        return $this->hasMany(Field::class, 'parent_id')->orderBy('order');
     }
 
     public function values(): HasMany

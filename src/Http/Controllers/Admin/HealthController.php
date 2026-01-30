@@ -5,6 +5,7 @@ namespace Arshpharala\AdvancedCustomFields\Http\Controllers\Admin;
 use Illuminate\Routing\Controller;
 use Arshpharala\AdvancedCustomFields\Models\Value;
 use Arshpharala\AdvancedCustomFields\Models\Field;
+use Illuminate\Support\Facades\DB;
 
 class HealthController extends Controller
 {

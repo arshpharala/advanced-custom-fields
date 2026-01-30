@@ -14,7 +14,7 @@ interface FieldTypeInterface
     /**
      * Render the field input for the admin UI.
      */
-    public function renderInput(Field $field, $value = null): string;
+    public function renderInput(Field $field, $value = null, string $inputName = null): string;
 
     /**
      * Validate the input value.

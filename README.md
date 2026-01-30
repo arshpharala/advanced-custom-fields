@@ -238,18 +238,76 @@ The most common way to render fields on a model edit page.
 
 ## Reading Values (Frontend Blade)
 
-### Helper & Directive
+### 1. Loop Through All Assigned Fields
+Ideal for "Details" or "Specifications" tabs where you want to show everything assigned to the model.
+
 ```blade
-{{-- Via helper --}}
-<p>{{ acf($product, 'subtitle') }}</p>
+<div class="product-specs">
+    <h4>Specifications</h4>
+    <dl class="row">
+        @foreach($product->acfAll() as $key => $value)
+            @if($value)
+                <dt class="col-sm-4">{{ ucfirst(str_replace('_', ' ', $key)) }}</dt>
+                <dd class="col-sm-8">{{ is_array($value) ? implode(', ', $value) : $value }}</dd>
+            @endif
+        @endforeach
+    </dl>
+</div>
+```
 
-{{-- Via directive --}}
-@acf($product, 'color_code', '#000')
+### 2. Access Specific Fields Individually
+Use the `@acf` directive or the `acf()` helper for fine-grained control.
 
-{{-- Looping all --}}
-@foreach($product->acfAll() as $key => $value)
-    <strong>{{ $key }}:</strong> {{ $value }}
+```blade
+{{-- Using the Directive (Best for simple strings/colors) --}}
+<div class="banner" style="background-color: @acf($product, 'theme_color', '#ffffff')">
+    <h1>@acf($product, 'headline')</h1>
+</div>
+
+{{-- Using the Helper (Best for toggles and logic) --}}
+@if(acf($product, 'show_sidebar'))
+    <aside>...</aside>
+@endif
+
+@foreach(acf($product, 'features', []) as $feature)
+    <li>{{ $feature }}</li>
 @endforeach
+```
+
+### 4. Repeater Fields
+Repeater fields allow you to create rows of content with sub-fields.
+
+```blade
+@if(have_rows('hero_slides', $product))
+    <div class="carousel">
+        @while(have_rows('hero_slides', $product))
+            @php the_row('hero_slides', $product); @endphp
+            <div class="slide">
+                <img src="{{ get_sub_field('image') }}">
+                <h3>{{ get_sub_field('caption') }}</h3>
+                <p>{{ get_sub_field('description') }}</p>
+            </div>
+        @endwhile
+    </div>
+@endif
+```
+
+> [!NOTE]
+> `the_row()` advances the pointer and returns the row data. `get_sub_field()` retrieves values from the current row.
+
+### 3. Accessing Field Metadata (Labels/Instructions)
+If you need the **Label** instead of the Raw Key:
+
+```blade
+@php $field = $product->acfMeta('warranty_info'); @php
+
+@if($field)
+    <div class="field-info">
+        <label class="fw-bold">{{ $field->name }}</label>
+        <span class="text-muted d-block small">{{ $field->instructions }}</span>
+        <div class="content">{{ acf($product, 'warranty_info') }}</div>
+    </div>
+@endif
 ```
 
 ---
@@ -318,6 +376,7 @@ Field Groups are displayed based on **Location Rules**.
 | `email` | String | Email Input |
 | `url` | String | URL Input |
 | `color` | String | Color Picker |
+| `repeater` | Array | Repeating rows of sub-fields |
 
 ---
 
@@ -414,7 +473,7 @@ php artisan cache:forget acf.definitions
 ---
 
 ## Roadmap
-- [ ] Repeatable Fields / Flexible Content blocks.
+- [ ] Flexible Content blocks (Layout based).
 - [ ] Advanced Relationship fields (Select from other Models).
 - [ ] REST API & GraphQL integration.
 - [ ] Inertia.js / Vue.js rendering components.
