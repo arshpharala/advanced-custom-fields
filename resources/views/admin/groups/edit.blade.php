@@ -132,7 +132,6 @@
         </div>
       </div>
     </div>
-    </div>
 
     <div x-show="showFieldModal" class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);" x-cloak>
       <div class="modal-dialog modal-lg">
