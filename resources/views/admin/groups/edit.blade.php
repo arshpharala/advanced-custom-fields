@@ -102,10 +102,22 @@
             <div class="mb-3 p-3 bg-light rounded border border-dashed pos-relative">
               <button type="button" class="btn-close btn-sm pos-absolute" style="top:5px; right:5px"
                 @click="removeRule(index)"></button>
-              <div class="mb-2">
+              <div class="mb-2" x-data="{ custom: false }">
                 <label class="form-label small fw-bold">Model Type</label>
-                <input type="text" :name="'locations[' + index + '][model_type]'" x-model="loc.model_type"
-                  class="form-control form-control-sm" placeholder="e.g. App\Models\Post">
+                <div class="input-group input-group-sm">
+                  <select :name="'locations[' + index + '][model_type]'" x-model="loc.model_type"
+                    class="form-select form-select-sm" x-show="!custom">
+                    @foreach ($models as $model)
+                      <option value="{{ $model }}">{{ class_basename($model) }} ({{ $model }})</option>
+                    @endforeach
+                    <option value="" disabled>-- Custom --</option>
+                  </select>
+                  <input type="text" :name="'locations[' + index + '][model_type]'" x-model="loc.model_type"
+                    class="form-control" placeholder="App\Models\..." x-show="custom">
+                  <button type="button" class="btn btn-outline-secondary" @click="custom = !custom">
+                    <i class="bi" :class="custom ? 'bi-list' : 'bi-pencil'"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </template>
@@ -284,14 +296,15 @@
           };
           this.showFieldModal = true;
         },
-        this.editingField = field;
-        this.fieldForm = {
-          ...field,
-          sub_fields: field.sub_fields || []
-        };
-        this.showFieldModal = true;
-      },
-      closeModal() {
+        editField(field) {
+          this.editingField = field;
+          this.fieldForm = {
+            ...field,
+            sub_fields: field.sub_fields || []
+          };
+          this.showFieldModal = true;
+        },
+        closeModal() {
           this.showFieldModal = false;
         },
         addSubField() {
@@ -309,58 +322,58 @@
           this.fieldForm.sub_fields.splice(index, 1);
         },
         async saveField() {
-            this.saving = true;
-            const url = this.editingField ?
-              `{{ url('admin/advanced-custom-fields/fields') }}/${this.editingField.id}` :
-              `{{ url('admin/advanced-custom-fields/fields') }}`;
+          this.saving = true;
+          const url = this.editingField ?
+            `{{ url('admin/advanced-custom-fields/fields') }}/${this.editingField.id}` :
+            `{{ url('admin/advanced-custom-fields/fields') }}`;
 
-            const method = this.editingField ? 'PUT' : 'POST';
+          const method = this.editingField ? 'PUT' : 'POST';
 
-            try {
-              const response = await fetch(url, {
-                method: method,
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify(this.fieldForm)
-              });
-
-              if (response.ok) {
-                window.location.reload();
-              } else {
-                const err = await response.json();
-                alert(err.message || 'Error saving field');
-              }
-            } catch (e) {
-              alert('An error occurred');
-            } finally {
-              this.saving = false;
-            }
-          },
-          deleteField(id) {
-            if (confirm('Delete this field? Stored values will remain but will be orphaned.')) {
-              fetch(`{{ url('admin/advanced-custom-fields/fields') }}/${id}`, {
-                method: 'DELETE',
-                headers: {
-                  'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-              }).then(() => window.location.reload());
-            }
-          },
-          updateOrder(order) {
-            fetch('{{ route('acf.admin.fields.sort') }}', {
-              method: 'POST',
+          try {
+            const response = await fetch(url, {
+              method: method,
               headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
               },
-              body: JSON.stringify({
-                order
-              })
+              body: JSON.stringify(this.fieldForm)
             });
+
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              const err = await response.json();
+              alert(err.message || 'Error saving field');
+            }
+          } catch (e) {
+            alert('An error occurred');
+          } finally {
+            this.saving = false;
           }
-    }
+        },
+        deleteField(id) {
+          if (confirm('Delete this field? Stored values will remain but will be orphaned.')) {
+            fetch(`{{ url('admin/advanced-custom-fields/fields') }}/${id}`, {
+              method: 'DELETE',
+              headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+              }
+            }).then(() => window.location.reload());
+          }
+        },
+        updateOrder(order) {
+          fetch('{{ route('acf.admin.fields.sort') }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+              order
+            })
+          });
+        }
+      }
     }
   </script>
 @endpush

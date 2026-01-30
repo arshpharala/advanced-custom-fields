@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Arshpharala\AdvancedCustomFields\Models\FieldGroup;
 use Illuminate\Support\Facades\DB;
+use Arshpharala\AdvancedCustomFields\Support\ModelScanner;
 
 class FieldGroupController extends Controller
 {
@@ -26,7 +27,8 @@ class FieldGroupController extends Controller
     {
         return view('acf::admin.groups.edit', [
             'group' => new FieldGroup(),
-            'is_edit' => false
+            'is_edit' => false,
+            'models' => ModelScanner::all()
         ]);
     }
 
@@ -50,7 +52,8 @@ class FieldGroupController extends Controller
         $group->load('fields', 'locations');
         return view('acf::admin.groups.edit', [
             'group' => $group,
-            'is_edit' => true
+            'is_edit' => true,
+            'models' => ModelScanner::all()
         ]);
     }
 
